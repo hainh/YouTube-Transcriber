@@ -319,7 +319,7 @@ class YouTubeTranscriptExtractor {
             const videoId = this.extractVideoId();
             
             // Tạo tên file
-            const fileName = `YouTube_Transcript_${videoTitle}_${videoId}.txt`;
+            const fileName = `YouTube_Transcript_${videoTitle.replaceAll(/[^\w ]/g, '')}_${videoId}.txt`;
             
             // Tạo nội dung file với metadata
             const fileContent = transcript;
