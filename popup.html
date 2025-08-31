@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .header .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .feature:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            font-size: 18px;
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .status.active {
+            color: #4caf50;
+        }
+
+        .status.inactive {
+            color: #ff9800;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .instructions ol {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="icon">📝</div>
+        <h1>YouTube Transcript</h1>
+    </div>
+
+    <div id="status" class="status">
+        <span id="status-text">Checking...</span>
+    </div>
+
+    <div class="card">
+        <div class="feature">
+            <span class="feature-icon">🎯</span>
+            <span>Get transcript automatically</span>
+        </div>
+        <div class="feature">
+            <span class="feature-icon">📋</span>
+            <span>Copy transcript with timestamp</span>
+        </div>
+        <div class="feature">
+            <span class="feature-icon">🌍</span>
+            <span>Support all languages by the video</span>
+        </div>
+        <div class="feature">
+            <span class="feature-icon">⚡</span>
+            <span>Quick and friendly UI</span>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h3>Usage:</h3>
+        <ol>
+            <li>Open video YouTube with subtitle</li>
+            <li>Find button <span class="highlight">📝</span> on video control bar</li>
+            <li>Click to get transcript in 2 seconds</li>
+        </ol>
+        
+        <div style="margin-top: 15px; font-size: 12px; opacity: 0.9;">
+            <strong>Note:</strong> Extension only work if subtitle/transcript is turned on in video.
+        </div>
+    </div>
+
+    <button class="btn" id="refresh-btn">🔄 Refresh Extension</button>
+
+    <div class="footer">
+        <div>YouTube Transcript Extractor v1.0</div>
+        <div style="margin-top: 5px;">Made with ❤️ for productivity</div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
