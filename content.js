@@ -14,7 +14,7 @@ class YouTubeTranscriptExtractor {
     addTranscriptButton() {
         // Đợi YouTube UI load xong
         const checkForControls = setInterval(() => {
-            const controls = document.querySelector('.ytp-chrome-bottom .ytp-chrome-controls .ytp-left-controls');
+            const controls = document.querySelector('.ytp-chrome-bottom .ytp-chrome-controls .ytp-right-controls');
             
             if (controls && !document.getElementById('transcript-extractor-btn')) {
                 this.createTranscriptButton(controls);
@@ -23,43 +23,33 @@ class YouTubeTranscriptExtractor {
         }, 1000);
     }
 
-    setButtonStyles(button) {
-        button.style.width = '48px';
-        button.style.height = '48px';
-        button.style.fontSize = '18px';
-        button.style.background = 'none';
-        button.style.border = 'none';
-        button.style.color = 'white';
-        button.style.cursor = 'pointer';
-        button.style.opacity = '0.8';
-    }
-
-    createTranscriptButton(controls) {
-        const button = document.createElement('button');
-        button.id = 'transcript-extractor-btn';
-        button.className = 'ytp-button transcript-btn';
-        button.innerHTML = '📝';
-        button.title = 'Lấy Transcript';
-        // Thêm class và style
-        button.classList.add('transcript-extractor-btn');
-        this.setButtonStyles(button);
-
+    createTranscriptButton(/** @type {HTMLElement} */controls) {
+        const button = new DOMParser().parseFromString(`    <button id="transcript-extractor-btn"
+        class="ytp-transcript-btn ytp-button"
+        title="Get Transcript" 
+        aria-keyshortcuts="f"
+        data-priority="12" 
+        data-title-no-tooltip="Get Transcript" 
+        aria-label="Get Transcript keyboard shortcut r" 
+        data-tooltip-title="Get Transcript (r)">
+        <svg fill="#fff" width="100%" height="100%" viewBox="-6 -15 58 58" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg">
+            <title>file-contract-o</title>
+            <use class="ytp-svg-shadow" xlink:href="#ytp-id-23456"/>
+            <path d="M18.285 18.38H9.835a0.54 0.54 0 0 0 0 1.08H17.865A1.705 1.705 0 0 1 18.285 18.38Z"/>
+            <path d="M22.08 11.3H9.835a0.54 0.54 0 1 0 0 1.08H22.08a0.54 0.54 0 1 0 0-1.08Z"/>
+            <path d="M25.105 18.96V26.285a0.275 0.275 0 0 1-0.275 0.275H7.565a0.275 0.275 0 0 1-0.275-0.275V1.715a0.275 0.275 0 0 1 0.275-0.27H20.62v4.175a0.725 0.725 0 0 0 0.725 0.72h3.76l0 1.5c0.035 0 0.305-0.5 0.345-0.5 0.355-0.475 0.5-0.425 0.74-0.5 0.045 0 0.3 0 0.345 0V5.31L21.66 0H7.565A1.72 1.72 0 0 0 5.85 1.715V26.285A1.72 1.72 0 0 0 7.565 28H24.83a1.72 1.72 0 0 0 1.715-1.715V16.63c-0.16 0.22-0.315 0.45-0.46 0.685A8.08 8.08 0 0 0 25.105 18.96ZM22.065 2.57l2.14 2.325H22.065Z"/>
+            <path d="M20.645 14.81H9.835a0.54 0.54 0 0 0 0 1.08H19.93Z"/>
+            <path d="M13.5 24.415c0.035 0.22 0.295 0.29 0.465 0.36s0.36-0.06 0.5-0.13c0.845-0.41 2 0.075 2.89 0.075a0.415 0.415 0 0 0 0-0.83c-1.055 0-1.93-0.27-3-0.095a0.53 0.53 0 0 0-0.085-0.255 0.66 0.66 0 0 0-0.695-0.385 0.64 0.64 0 0 0-0.055-0.12 0.4 0.4 0 0 0-0.26-0.185 1.715 1.715 0 0 0 0.29-1.5 0.41 0.41 0 0 0-0.36-0.205c-0.55 0-1.025 0.56-1.385 0.91a25.925 25.925 0 0 0-2.43 2.85c-0.33 0.42 0.395 0.835 0.715 0.415a30.195 30.195 0 0 1 2.15-2.5c-0.185 0.305-0.38 0.605-0.585 0.89-0.295 0.455 0.405 0.845 0.715 0.42a0.82 0.82 0 0 1 0.265-0.26l-0.06 0.15h0l-0.045 0.1c-0.185 0.465 0.5 0.675 0.76 0.32a2.125 2.125 0 0 0 0.175-0.29A1.605 1.605 0 0 0 13.5 24.415Z"/>
+            <path d="M30.145 10.08c0-0.1-0.2-1-1.535-1.865s-2.22-0.685-2.32-0.66a0.55 0.55 0 0 0-0.32 0.23L18.5 19.145a0.555 0.555 0 0 0-0.085 0.235l-0.5 4.225a0.55 0.55 0 0 0 0.24 0.5 0.555 0.555 0 0 0 0.57 0L22.425 22a0.5 0.5 0 0 0 0.18-0.17L30.06 10.465A0.545 0.545 0 0 0 30.145 10.08ZM20.22 22.34a4.125 4.125 0 0 0-0.58-0.445A5.55 5.55 0 0 0 19 21.535l0.15-1.265a4 4 0 0 1 2.175 1.425Z"/>
+        </svg>
+        </button>`, 'text/html').body.firstChild;
         button.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             this.toggleTranscript();
         });
 
-        // Thêm hover effect
-        button.addEventListener('mouseenter', () => {
-            button.style.opacity = '1';
-        });
-
-        button.addEventListener('mouseleave', () => {
-            button.style.opacity = '0.8';
-        });
-
-        controls.appendChild(button);
+        controls.prepend(button);
     }
 
     async toggleTranscript() {
@@ -75,7 +65,7 @@ class YouTubeTranscriptExtractor {
             const transcript = await this.getTranscript();
             this.createTranscriptPanel(transcript);
         } catch (error) {
-            this.showError('Không thể lấy transcript: ' + error.message);
+            this.showError('Cannot get transcript: ' + error.message);
         }
     }
 
