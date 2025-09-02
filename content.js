@@ -211,6 +211,7 @@ class YouTubeTranscriptExtractor {
             if (copyBtn) {
                 copyBtn.addEventListener('click', () => {
                     this.copyTranscript(transcript);
+                    this.closeTranscriptPanel();
                 });
             }
 			
@@ -218,9 +219,11 @@ class YouTubeTranscriptExtractor {
 				let lines = transcript.split('\n').map(x => x.substring(x.indexOf(' ')).trim()).join('\n')
 				copyBtn2.addEventListener('click', () => {
 					this.copyTranscript(lines)
+                    this.closeTranscriptPanel();
 				})
 				copyBtn3.addEventListener('click', () => {
 					this.downloadTranscript(lines)
+                    this.closeTranscriptPanel();
 				})
 			}
         }, 0);
@@ -293,13 +296,7 @@ class YouTubeTranscriptExtractor {
     }
 
     copyTranscript(transcript) {
-        navigator.clipboard.writeText(transcript).then(() => {
-            const copyBtn = document.getElementById('copy-transcript');
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => {
-                copyBtn.textContent = 'Copy';
-            }, 2000);
-        });
+        navigator.clipboard.writeText(transcript)
     }
 
     downloadTranscript(transcript) {
