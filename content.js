@@ -7,7 +7,7 @@ class YouTubeTranscriptExtractor {
 
     init() {
         this.addTranscriptButton();
-        
+
         this.observeURLChanges();
     }
 
@@ -62,7 +62,7 @@ class YouTubeTranscriptExtractor {
 
     async openTranscriptPanel() {
         try {
-            const transcript = await this.getTranscript();
+            const transcript = latestTranscript || await this.getTranscript();
             this.createTranscriptPanel(transcript);
         } catch (error) {
             this.showError('Cannot get transcript: ' + error.message);
@@ -99,7 +99,7 @@ class YouTubeTranscriptExtractor {
                 const menuButton = document.querySelector('button[aria-label*="More actions"], button[aria-label*="Thêm"]');
                 if (menuButton && !document.querySelector('[aria-label*="transcript"], [aria-label*="phụ đề"]')) {
                     menuButton.click();
-                    
+
                     setTimeout(() => {
                         const transcriptBtn = document.querySelector('[aria-label*="transcript"], [aria-label*="phụ đề"], [aria-label*="Show transcript"]');
                         resolve(transcriptBtn);
@@ -118,26 +118,26 @@ class YouTubeTranscriptExtractor {
         return new Promise((resolve, reject) => {
             // Tìm và click nút transcript
             const transcriptButton = document.querySelector('[aria-label*="transcript"], [aria-label*="phụ đề"], [aria-label*="Show transcript"]');
-            
+
             if (transcriptButton) {
                 transcriptButton.click();
-                
+
                 // Đợi transcript panel xuất hiện
                 setTimeout(() => {
                     const transcriptContainer = document.querySelector('#segments-container, ytd-transcript-segment-list-renderer');
-                    
+
                     if (transcriptContainer) {
                         const segments = transcriptContainer.querySelectorAll('ytd-transcript-segment-renderer');
                         let transcript = '';
-                        
+
                         segments.forEach((segment, index) => {
                             const text = segment ? segment.innerText.trim() : '';
-                            
+
                             if (text) {
                                 transcript += `${text.replaceAll(/\s+/g, ' ')}\n`;
                             }
                         });
-                        
+
                         resolve(transcript || 'Cannot extract transcript content');
                     } else {
                         reject(new Error('Not found transcript container'));
@@ -201,7 +201,7 @@ class YouTubeTranscriptExtractor {
             const copyBtn = document.getElementById('copy-transcript');
             const copyBtn2 = document.getElementById('copy-transcript-2');
             const copyBtn3 = document.getElementById('copy-transcript-3');
-            
+
             if (closeBtn) {
                 closeBtn.addEventListener('click', () => {
                     this.closeTranscriptPanel();
@@ -214,18 +214,18 @@ class YouTubeTranscriptExtractor {
                     this.closeTranscriptPanel();
                 });
             }
-			
-			if (copyBtn2) {
-				let lines = transcript.split('\n').map(x => x.substring(x.indexOf(' ')).trim()).join('\n')
-				copyBtn2.addEventListener('click', () => {
-					this.copyTranscript(lines)
+
+            if (copyBtn2) {
+                let lines = transcript.split('\n').map(x => x.substring(x.indexOf(' ')).trim()).join('\n')
+                copyBtn2.addEventListener('click', () => {
+                    this.copyTranscript(lines)
                     this.closeTranscriptPanel();
-				})
-				copyBtn3.addEventListener('click', () => {
-					this.downloadTranscript(lines)
+                })
+                copyBtn3.addEventListener('click', () => {
+                    this.downloadTranscript(lines)
                     this.closeTranscriptPanel();
-				})
-			}
+                })
+            }
         }, 0);
 
         overlay.addEventListener('click', (e) => {
@@ -304,37 +304,37 @@ class YouTubeTranscriptExtractor {
             // Lấy thông tin video
             const videoTitle = this.getVideoTitle();
             const videoId = this.extractVideoId();
-            
+
             // Tạo tên file
             const fileName = `YouTube_Transcript_${videoTitle.replaceAll(/[^\w ]/g, '')}_${videoId}.txt`;
-            
+
             // Tạo nội dung file với metadata
             const fileContent = transcript;
-            
+
             // Tạo blob và download
             const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            
+
             const downloadLink = document.createElement('a');
             downloadLink.href = url;
             downloadLink.download = fileName;
             downloadLink.style.display = 'none';
-            
+
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
-            
+
             // Cleanup URL object
             URL.revokeObjectURL(url);
-            
+
         } catch (error) {
             console.error('Download error:', error);
         }
     }
-	getVideoTitle() {
-		return document.title;	
-	}
-	
+    getVideoTitle() {
+        return document.title;
+    }
+
     closeTranscriptPanel() {
         if (this.transcriptPanel) {
             this.transcriptPanel.remove();
@@ -369,7 +369,7 @@ class YouTubeTranscriptExtractor {
 
     observeURLChanges() {
         let currentURL = location.href;
-        
+
         const observer = new MutationObserver(() => {
             if (location.href !== currentURL) {
                 currentURL = location.href;
@@ -393,3 +393,39 @@ if (document.readyState === 'loading') {
 } else {
     new YouTubeTranscriptExtractor();
 }
+
+let latestTranscript = '';
+
+window.addEventListener('message', async function(event) {
+    // Check for our unique identifier
+    if (event.data.type === "__youtube_transcript_get_timed_text_request__") {
+        try {
+            let response = await this.fetch(event.data.detail.requestUrl);
+            let data = await response.json();
+            if (data.events && Array.isArray(data.events)) {
+                let lines = data.events.map(event => {
+                    if (event.segs && Array.isArray(event.segs)) {
+                        let text = event.segs.map(seg => seg.utf8).join('');
+                        if (text.trim() === '') return '\n';
+                        let sec = event.tStartMs / 1000 | 0;
+                        let min = sec / 60 | 0;
+                        let hour = min / 60 | 0;
+                        return `${hour.toString().padStart(2, '0')}:${(min % 60).toString().padStart(2, '0')}:${(sec % 60).toString().padStart(2, '0')} ${text.trim()}`
+                    }
+                    return '';
+                });
+                latestTranscript = lines.join('');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+});
+
+// Create a script tag
+const script = document.createElement('script');
+script.setAttribute("type", "text/javascript");
+script.src = chrome.runtime.getURL('yt-injector.js');
+
+// Append the script tag to the DOM
+document.documentElement.insertBefore(script, document.documentElement.firstChild);
