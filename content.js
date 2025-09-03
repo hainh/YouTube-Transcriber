@@ -1,40 +1,29 @@
 class YouTubeTranscriptExtractor {
     constructor() {
-        this.isActive = false;
         this.transcriptPanel = null;
         this.init();
     }
 
     init() {
         this.addTranscriptButton();
-
         this.observeURLChanges();
     }
 
     addTranscriptButton() {
-        // Đợi YouTube UI load xong
-        const checkForControls = setInterval(() => {
-            const controls = document.querySelector('.ytp-chrome-bottom .ytp-chrome-controls .ytp-right-controls');
-            
-            if (controls && !document.getElementById('transcript-extractor-btn')) {
-                this.createTranscriptButton(controls);
-                clearInterval(checkForControls);
-            }
-        }, 1000);
+        const controls = document.querySelector('.ytp-chrome-bottom .ytp-chrome-controls .ytp-right-controls');
+        if (controls && !document.querySelector('.ytp-transcript-btn')) {
+            this.createTranscriptButton(controls);
+        }
     }
 
     createTranscriptButton(/** @type {HTMLElement} */controls) {
-        const button = new DOMParser().parseFromString(`    <button id="transcript-extractor-btn"
-        class="ytp-transcript-btn ytp-button"
-        title="Get Transcript" 
-        aria-keyshortcuts="f"
-        data-priority="12" 
-        data-title-no-tooltip="Get Transcript" 
-        aria-label="Get Transcript keyboard shortcut r" 
-        data-tooltip-title="Get Transcript (r)">
+        const button = new DOMParser().parseFromString(`    <button
+        class="ytp-button ytp-transcript-btn"
+        aria-label="Get Transcript"
+        style="position: relative; overflow: initial;" >
         <svg fill="#fff" width="100%" height="100%" viewBox="-6 -15 58 58" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg">
             <title>file-contract-o</title>
-            <use class="ytp-svg-shadow" xlink:href="#ytp-id-23456"/>
+            <use class="ytp-svg-shadow"/>
             <path d="M18.285 18.38H9.835a0.54 0.54 0 0 0 0 1.08H17.865A1.705 1.705 0 0 1 18.285 18.38Z"/>
             <path d="M22.08 11.3H9.835a0.54 0.54 0 1 0 0 1.08H22.08a0.54 0.54 0 1 0 0-1.08Z"/>
             <path d="M25.105 18.96V26.285a0.275 0.275 0 0 1-0.275 0.275H7.565a0.275 0.275 0 0 1-0.275-0.275V1.715a0.275 0.275 0 0 1 0.275-0.27H20.62v4.175a0.725 0.725 0 0 0 0.725 0.72h3.76l0 1.5c0.035 0 0.305-0.5 0.345-0.5 0.355-0.475 0.5-0.425 0.74-0.5 0.045 0 0.3 0 0.345 0V5.31L21.66 0H7.565A1.72 1.72 0 0 0 5.85 1.715V26.285A1.72 1.72 0 0 0 7.565 28H24.83a1.72 1.72 0 0 0 1.715-1.715V16.63c-0.16 0.22-0.315 0.45-0.46 0.685A8.08 8.08 0 0 0 25.105 18.96ZM22.065 2.57l2.14 2.325H22.065Z"/>
@@ -368,31 +357,19 @@ class YouTubeTranscriptExtractor {
     }
 
     observeURLChanges() {
-        let currentURL = location.href;
-
-        const observer = new MutationObserver(() => {
-            if (location.href !== currentURL) {
-                currentURL = location.href;
+        // Re-inject the button when navigating between videos
+        const observer = new MutationObserver((mutations) => {
+            if (document.querySelector('.ytp-right-controls') && !document.querySelector('.ytp-transcript-btn')) {
                 this.closeTranscriptPanel();
-                // Re-add button after URL change
-                setTimeout(() => {
-                    this.addTranscriptButton();
-                }, 2000);
+                this.addTranscriptButton();
             }
         });
 
-        observer.observe(document, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true });
     }
 }
 
-// Khởi tạo khi trang load xong
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new YouTubeTranscriptExtractor();
-    });
-} else {
-    new YouTubeTranscriptExtractor();
-}
+let a = new YouTubeTranscriptExtractor();
 
 let latestTranscript = '';
 

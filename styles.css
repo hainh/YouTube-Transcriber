@@ -1,12 +1,27 @@
 /* YouTube Transcript Extractor Styles */
-
-.transcript-btn, .transcript-extractor-btn {
-    transition: all 0.3s ease !important;
+.ytp-transcript-btn::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: calc(100% + 1.4rem);
+    left: 50%;
+    transform: translateX(calc(-50% - 10px));
+    background-color: rgba(28, 28, 28, 0.9);
+    color: #fff;
+    padding: 5px 9px;
+    border-radius: 4px;
+    font-family: "Roboto", "Arial", sans-serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: normal;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
 }
-
-.transcript-btn:hover, .transcript-extractor-btn:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-    transform: scale(1.1) !important;
+  
+.ytp-transcript-btn:hover::after {
+    visibility: visible;
+    opacity: 1;
 }
 
 .transcript-header-btn {
